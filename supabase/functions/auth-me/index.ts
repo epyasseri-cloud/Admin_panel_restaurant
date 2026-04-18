@@ -1,22 +1,25 @@
-import { createUserClient } from '../_shared/supabase.ts';
-import { errorResponse, successResponse } from '../_shared/response.ts';
+import { createServiceClient, getAuthenticatedUser } from '../_shared/supabase.ts';
+import { errorResponse, preflightResponse, successResponse } from '../_shared/response.ts';
 
 Deno.serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return preflightResponse();
+  }
+
   if (req.method !== 'GET') {
     return errorResponse('method_not_allowed', 'Only GET is allowed', 405);
   }
 
-  const supabase = createUserClient(req);
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+  const { user, error: authError } = await getAuthenticatedUser(req);
 
   if (authError || !user) {
     return errorResponse('unauthorized', 'Unauthorized', 401, authError?.message);
   }
 
+  const supabase = createServiceClient();
+
   const { data: profile, error } = await supabase
+    .schema('app')
     .from('user_profiles')
     .select('id, email, name, role, is_active')
     .eq('id', user.id)

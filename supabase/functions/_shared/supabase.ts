@@ -22,3 +22,40 @@ export function createServiceClient() {
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
   );
 }
+
+export function getBearerToken(req: Request): string | null {
+  const authHeader = req.headers.get('Authorization') ?? req.headers.get('authorization');
+
+  if (!authHeader) {
+    return null;
+  }
+
+  const [scheme, token] = authHeader.split(' ');
+  if (scheme?.toLowerCase() !== 'bearer' || !token) {
+    return null;
+  }
+
+  return token;
+}
+
+export async function getAuthenticatedUser(req: Request) {
+  const token = getBearerToken(req);
+
+  if (!token) {
+    return {
+      user: null,
+      error: 'Missing bearer token',
+    };
+  }
+
+  const serviceClient = createServiceClient();
+  const {
+    data: { user },
+    error,
+  } = await serviceClient.auth.getUser(token);
+
+  return {
+    user,
+    error: error?.message ?? null,
+  };
+}

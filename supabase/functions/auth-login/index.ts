@@ -1,5 +1,5 @@
 import { createServiceClient } from '../_shared/supabase.ts';
-import { errorResponse, successResponse } from '../_shared/response.ts';
+import { errorResponse, preflightResponse, successResponse } from '../_shared/response.ts';
 
 interface LoginBody {
   email?: string;
@@ -7,8 +7,25 @@ interface LoginBody {
 }
 
 Deno.serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return preflightResponse();
+  }
+
+  if (req.method === 'GET') {
+    return successResponse(
+      {
+        status: 'ok',
+        function: 'auth-login',
+        expected_method: 'POST',
+      },
+      'health_check'
+    );
+  }
+
   if (req.method !== 'POST') {
-    return errorResponse('method_not_allowed', 'Only POST is allowed', 405);
+    return errorResponse('method_not_allowed', 'Only POST is allowed', 405, {
+      received_method: req.method,
+    });
   }
 
   let body: LoginBody;
@@ -33,14 +50,23 @@ Deno.serve(async (req) => {
     return errorResponse('invalid_credentials', 'Invalid credentials', 401, error?.message);
   }
 
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
+    .schema('app')
     .from('user_profiles')
     .select('id, email, name, role, is_active')
     .eq('id', data.user.id)
     .single();
 
-  if (!profile || profile.role !== 'admin' || profile.is_active === false) {
-    return errorResponse('forbidden', 'Admin access required', 403);
+  if (profileError || !profile) {
+    return errorResponse('profile_not_found', 'User profile not found in app.user_profiles', 403, profileError?.message);
+  }
+
+  if (profile.is_active === false) {
+    return errorResponse('user_inactive', 'User is inactive', 403);
+  }
+
+  if (profile.role !== 'admin') {
+    return errorResponse('role_forbidden', 'Admin role is required', 403, { role: profile.role });
   }
 
   return successResponse(

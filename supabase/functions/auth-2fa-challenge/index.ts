@@ -1,5 +1,5 @@
-import { createServiceClient, createUserClient } from '../_shared/supabase.ts';
-import { errorResponse, successResponse } from '../_shared/response.ts';
+import { createServiceClient, getAuthenticatedUser } from '../_shared/supabase.ts';
+import { errorResponse, preflightResponse, successResponse } from '../_shared/response.ts';
 
 interface ChallengeBody {
   action?: string;
@@ -10,15 +10,15 @@ function generateChallengeId() {
 }
 
 Deno.serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return preflightResponse();
+  }
+
   if (req.method !== 'POST') {
     return errorResponse('method_not_allowed', 'Only POST is allowed', 405);
   }
 
-  const userClient = createUserClient(req);
-  const {
-    data: { user },
-    error: userError,
-  } = await userClient.auth.getUser();
+  const { user, error: userError } = await getAuthenticatedUser(req);
 
   if (userError || !user) {
     return errorResponse('unauthorized', 'Unauthorized', 401, userError?.message);
@@ -39,7 +39,7 @@ Deno.serve(async (req) => {
   const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString();
 
   const adminClient = createServiceClient();
-  const { error } = await adminClient.from('two_factor_challenges').insert({
+  const { error } = await adminClient.schema('app').from('two_factor_challenges').insert({
     challenge_id: challengeId,
     user_id: user.id,
     action: body.action,

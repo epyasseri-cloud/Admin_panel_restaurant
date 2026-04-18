@@ -105,18 +105,18 @@ export function MenuItemForm({
 
             <div>
               <Label htmlFor="category">Categoría *</Label>
-              <select
+              <Input
                 id="category"
+                list="menu-item-categories"
                 {...register('category')}
-                className="w-full border rounded px-3 py-2"
-              >
-                <option value="">Seleccionar categoría</option>
+                placeholder="Escribe o selecciona una categoría"
+                className={errors.category ? 'border-red-500' : ''}
+              />
+              <datalist id="menu-item-categories">
                 {categories.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
-                  </option>
+                  <option key={cat} value={cat} />
                 ))}
-              </select>
+              </datalist>
               {errors.category && (
                 <p className="text-red-500 text-sm mt-1">{errors.category.message}</p>
               )}

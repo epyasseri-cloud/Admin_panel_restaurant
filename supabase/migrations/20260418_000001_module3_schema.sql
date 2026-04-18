@@ -123,6 +123,8 @@ create or replace function app.current_user_role()
 returns app.user_role
 language sql
 stable
+security definer
+set search_path = app, public
 as $$
   select role from app.user_profiles where id = auth.uid();
 $$;
@@ -131,9 +133,25 @@ create or replace function app.is_admin()
 returns boolean
 language sql
 stable
+security definer
+set search_path = app, public
 as $$
   select coalesce(app.current_user_role() = 'admin', false);
 $$;
+
+grant usage on schema app to authenticated, service_role;
+grant all on all tables in schema app to authenticated, service_role;
+grant all on all sequences in schema app to authenticated, service_role;
+grant execute on all functions in schema app to authenticated, service_role;
+
+alter default privileges in schema app
+grant all on tables to authenticated, service_role;
+
+alter default privileges in schema app
+grant all on sequences to authenticated, service_role;
+
+alter default privileges in schema app
+grant execute on functions to authenticated, service_role;
 
 alter table app.user_profiles enable row level security;
 alter table app.menu_items enable row level security;
