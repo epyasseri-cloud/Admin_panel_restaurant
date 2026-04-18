@@ -1,0 +1,980 @@
+openapi: 3.0.3
+info:
+  title: Admin Restaurant API - Modulo 3
+  version: 0.1.0
+  description: >
+    Contrato base para integracion del panel de administracion (Modulo 3).
+    Este documento se genero a partir de los servicios frontend actuales.
+servers:
+  - url: https://api.restaurant.local
+    description: Entorno local/placeholder
+security:
+  - bearerAuth: []
+tags:
+  - name: Auth
+  - name: Menu
+  - name: Users
+  - name: Settings
+  - name: Reports
+  - name: Audit
+paths:
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Iniciar sesion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login exitoso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+  /auth/logout:
+    post:
+      tags: [Auth]
+      summary: Cerrar sesion
+      responses:
+        '200':
+          description: Sesion cerrada
+  /auth/me:
+    get:
+      tags: [Auth]
+      summary: Obtener usuario autenticado
+      responses:
+        '200':
+          description: Usuario autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthUser'
+  /auth/2fa/challenge:
+    post:
+      tags: [Auth]
+      summary: Crear challenge 2FA para accion critica
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [action]
+              properties:
+                action:
+                  type: string
+      responses:
+        '200':
+          description: Challenge creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TwoFactorChallenge'
+  /auth/2fa/verify:
+    post:
+      tags: [Auth]
+      summary: Verificar codigo 2FA
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TwoFactorVerifyRequest'
+      responses:
+        '200':
+          description: Verificacion completada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TwoFactorVerifyResponse'
+  /auth/2fa/setup:
+    post:
+      tags: [Auth]
+      summary: Iniciar setup de 2FA
+      responses:
+        '200':
+          description: Setup generado
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [secret, qr_code]
+                properties:
+                  secret:
+                    type: string
+                  qr_code:
+                    type: string
+  /auth/2fa/confirm:
+    post:
+      tags: [Auth]
+      summary: Confirmar setup de 2FA
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [totp_code]
+              properties:
+                totp_code:
+                  type: string
+      responses:
+        '200':
+          description: Setup confirmado
+  /auth/2fa/disable:
+    post:
+      tags: [Auth]
+      summary: Desactivar 2FA
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [totp_code]
+              properties:
+                totp_code:
+                  type: string
+      responses:
+        '200':
+          description: 2FA desactivado
+
+  /menu-items:
+    get:
+      tags: [Menu]
+      summary: Listar items de menu paginados
+      parameters:
+        - in: query
+          name: page
+          schema: { type: integer, minimum: 1 }
+        - in: query
+          name: limit
+          schema: { type: integer, minimum: 1 }
+        - in: query
+          name: search
+          schema: { type: string }
+        - in: query
+          name: category
+          schema: { type: string }
+      responses:
+        '200':
+          description: Lista de items
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMenuItems'
+    post:
+      tags: [Menu]
+      summary: Crear item de menu
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMenuItemDTO'
+      responses:
+        '201':
+          description: Item creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MenuItem'
+  /menu-items/upload:
+    post:
+      tags: [Menu]
+      summary: Crear item con imagen
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                name:
+                  type: string
+                description:
+                  type: string
+                price:
+                  type: number
+                category:
+                  type: string
+                estimated_prep_time:
+                  type: integer
+                available:
+                  type: boolean
+      responses:
+        '201':
+          description: Item creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MenuItem'
+  /menu-items/categories:
+    get:
+      tags: [Menu]
+      summary: Obtener categorias de menu
+      responses:
+        '200':
+          description: Categorias
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+  /menu-items/{id}:
+    get:
+      tags: [Menu]
+      summary: Obtener item por id
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          description: Item encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MenuItem'
+    put:
+      tags: [Menu]
+      summary: Actualizar item
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMenuItemDTO'
+      responses:
+        '200':
+          description: Item actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MenuItem'
+    delete:
+      tags: [Menu]
+      summary: Eliminar item
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          description: Item eliminado
+  /menu-items/{id}/availability:
+    patch:
+      tags: [Menu]
+      summary: Cambiar disponibilidad de item
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [available]
+              properties:
+                available:
+                  type: boolean
+                reason:
+                  type: string
+      responses:
+        '200':
+          description: Disponibilidad actualizada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MenuItem'
+  /menu-items/bulk/availability:
+    patch:
+      tags: [Menu]
+      summary: Actualizacion masiva de disponibilidad por categoria
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [category, available]
+              properties:
+                category:
+                  type: string
+                available:
+                  type: boolean
+      responses:
+        '200':
+          description: Cantidad de items actualizados
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [updated]
+                properties:
+                  updated:
+                    type: integer
+
+  /users:
+    get:
+      tags: [Users]
+      summary: Listar usuarios paginados
+      parameters:
+        - in: query
+          name: page
+          schema: { type: integer, minimum: 1 }
+        - in: query
+          name: limit
+          schema: { type: integer, minimum: 1 }
+        - in: query
+          name: role
+          schema: { type: string }
+      responses:
+        '200':
+          description: Lista de usuarios
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUsers'
+    post:
+      tags: [Users]
+      summary: Crear usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserDTO'
+      responses:
+        '201':
+          description: Usuario creado
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/User'
+                  - type: object
+                    properties:
+                      temporary_password:
+                        type: string
+  /users/{id}:
+    get:
+      tags: [Users]
+      summary: Obtener usuario por id
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          description: Usuario encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    put:
+      tags: [Users]
+      summary: Actualizar usuario
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserDTO'
+      responses:
+        '200':
+          description: Usuario actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    delete:
+      tags: [Users]
+      summary: Eliminar usuario
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          description: Usuario eliminado
+  /users/{id}/reset-password:
+    post:
+      tags: [Users]
+      summary: Resetear password y retornar temporal
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          description: Password temporal generado
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [temporary_password]
+                properties:
+                  temporary_password:
+                    type: string
+
+  /settings:
+    get:
+      tags: [Settings]
+      summary: Obtener configuracion del restaurante
+      responses:
+        '200':
+          description: Configuracion actual
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Settings'
+    patch:
+      tags: [Settings]
+      summary: Actualizar configuracion parcial
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SettingsPatch'
+      responses:
+        '200':
+          description: Configuracion actualizada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Settings'
+  /settings/tables:
+    post:
+      tags: [Settings]
+      summary: Crear mesa
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TableCreate'
+      responses:
+        '201':
+          description: Mesa creada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Table'
+  /settings/tables/{id}:
+    put:
+      tags: [Settings]
+      summary: Actualizar mesa
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TablePatch'
+      responses:
+        '200':
+          description: Mesa actualizada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Table'
+    delete:
+      tags: [Settings]
+      summary: Eliminar mesa
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          description: Mesa eliminada
+
+  /reports:
+    get:
+      tags: [Reports]
+      summary: Generar reporte de ventas
+      parameters:
+        - in: query
+          name: from_date
+          required: true
+          schema: { type: string, format: date }
+        - in: query
+          name: to_date
+          required: true
+          schema: { type: string, format: date }
+        - in: query
+          name: group_by
+          required: true
+          schema:
+            type: string
+            enum: [date, table, waiter, dish]
+        - in: query
+          name: waiter_id
+          schema: { type: string }
+        - in: query
+          name: table_id
+          schema: { type: string }
+        - in: query
+          name: dish_id
+          schema: { type: string }
+      responses:
+        '200':
+          description: Datos de reporte
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportData'
+  /reports/export/csv:
+    get:
+      tags: [Reports]
+      summary: Exportar reporte CSV
+      responses:
+        '200':
+          description: Archivo CSV
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+  /reports/export/pdf:
+    get:
+      tags: [Reports]
+      summary: Exportar reporte PDF
+      responses:
+        '200':
+          description: Archivo PDF
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+  /reports/stats:
+    get:
+      tags: [Reports]
+      summary: Obtener estadisticas de ventas por periodo
+      parameters:
+        - in: query
+          name: period
+          schema: { type: string, default: month }
+      responses:
+        '200':
+          description: Estadisticas
+
+  /audit-log:
+    get:
+      tags: [Audit]
+      summary: Listar logs de auditoria paginados
+      parameters:
+        - in: query
+          name: page
+          schema: { type: integer, minimum: 1 }
+        - in: query
+          name: limit
+          schema: { type: integer, minimum: 1 }
+        - in: query
+          name: from_date
+          schema: { type: string, format: date-time }
+        - in: query
+          name: to_date
+          schema: { type: string, format: date-time }
+        - in: query
+          name: event_type
+          schema: { type: string }
+        - in: query
+          name: user_id
+          schema: { type: string }
+        - in: query
+          name: resource_type
+          schema: { type: string }
+      responses:
+        '200':
+          description: Logs de auditoria
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAuditLogs'
+  /audit-log/{id}:
+    get:
+      tags: [Audit]
+      summary: Obtener log por id
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          description: Log encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditLog'
+  /audit-log/export/csv:
+    get:
+      tags: [Audit]
+      summary: Exportar auditoria CSV
+      responses:
+        '200':
+          description: Archivo CSV
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    IdPath:
+      in: path
+      name: id
+      required: true
+      schema:
+        type: string
+  schemas:
+    AuthToken:
+      type: object
+      required: [access_token, expires_in, token_type]
+      properties:
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+        expires_in:
+          type: integer
+        token_type:
+          type: string
+    AuthUser:
+      type: object
+      required: [id, email, name, role]
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        role:
+          type: string
+          enum: [waiter, kitchen, manager, admin]
+    LoginResponse:
+      type: object
+      required: [token, user]
+      properties:
+        token:
+          $ref: '#/components/schemas/AuthToken'
+        user:
+          $ref: '#/components/schemas/AuthUser'
+    Ingredient:
+      type: object
+      required: [name, allergen]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        allergen:
+          type: boolean
+    MenuItem:
+      type: object
+      required: [id, name, price, category, available]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        category:
+          type: string
+        image:
+          type: string
+        estimated_prep_time:
+          type: integer
+        ingredients:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ingredient'
+        available:
+          type: boolean
+    CreateMenuItemDTO:
+      type: object
+      required: [name, price, category]
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        category:
+          type: string
+        image:
+          type: string
+        estimated_prep_time:
+          type: integer
+        ingredients:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ingredient'
+        available:
+          type: boolean
+    User:
+      type: object
+      required: [id, email, name, role, is_active]
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        role:
+          type: string
+          enum: [waiter, kitchen, manager, admin]
+        is_active:
+          type: boolean
+    CreateUserDTO:
+      type: object
+      required: [email, name, role]
+      properties:
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        role:
+          type: string
+          enum: [waiter, kitchen, manager, admin]
+        password:
+          type: string
+    UpdateUserDTO:
+      type: object
+      properties:
+        name:
+          type: string
+        role:
+          type: string
+          enum: [waiter, kitchen, manager, admin]
+        is_active:
+          type: boolean
+    OperatingHour:
+      type: object
+      required: [day, open_time, close_time, is_closed]
+      properties:
+        day:
+          type: string
+          enum: [monday, tuesday, wednesday, thursday, friday, saturday, sunday]
+        open_time:
+          type: string
+        close_time:
+          type: string
+        is_closed:
+          type: boolean
+    Table:
+      type: object
+      required: [number, name, capacity, is_active]
+      properties:
+        id:
+          type: string
+        number:
+          type: integer
+        name:
+          type: string
+        capacity:
+          type: integer
+        is_active:
+          type: boolean
+    TableCreate:
+      allOf:
+        - $ref: '#/components/schemas/Table'
+      required: [number, name, capacity, is_active]
+    TablePatch:
+      type: object
+      properties:
+        number:
+          type: integer
+        name:
+          type: string
+        capacity:
+          type: integer
+        is_active:
+          type: boolean
+    Settings:
+      type: object
+      required: [id, restaurant_name, currency, timezone, operating_hours, tables]
+      properties:
+        id:
+          type: string
+        restaurant_name:
+          type: string
+        currency:
+          type: string
+        timezone:
+          type: string
+        operating_hours:
+          type: array
+          items:
+            $ref: '#/components/schemas/OperatingHour'
+        tables:
+          type: array
+          items:
+            $ref: '#/components/schemas/Table'
+    SettingsPatch:
+      type: object
+      properties:
+        restaurant_name:
+          type: string
+        operating_hours:
+          type: array
+          items:
+            $ref: '#/components/schemas/OperatingHour'
+        tables:
+          type: array
+          items:
+            $ref: '#/components/schemas/Table'
+    ReportDetail:
+      type: object
+      required: [id, name, quantity, total_revenue, percentage_of_total]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        quantity:
+          type: number
+        total_revenue:
+          type: number
+        percentage_of_total:
+          type: number
+    ReportData:
+      type: object
+      required: [period, total_orders, total_revenue, items_sold, details]
+      properties:
+        period:
+          type: string
+        total_orders:
+          type: integer
+        total_revenue:
+          type: number
+        items_sold:
+          type: number
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReportDetail'
+    AuditLog:
+      type: object
+      required: [id, user_id, event_type, resource_type, resource_id, changes, created_at]
+      properties:
+        id:
+          type: string
+        user_id:
+          type: string
+        event_type:
+          type: string
+        resource_type:
+          type: string
+        resource_id:
+          type: string
+        changes:
+          type: object
+          additionalProperties: true
+        reason:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+    TwoFactorChallenge:
+      type: object
+      required: [challenge_id, action, created_at, expires_at]
+      properties:
+        challenge_id:
+          type: string
+        action:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+    TwoFactorVerifyRequest:
+      type: object
+      required: [challenge_id, totp_code]
+      properties:
+        challenge_id:
+          type: string
+        totp_code:
+          type: string
+    TwoFactorVerifyResponse:
+      type: object
+      required: [success, message]
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+    PaginatedMenuItems:
+      type: object
+      required: [data, total, page, limit, total_pages]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/MenuItem'
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+        total_pages:
+          type: integer
+    PaginatedUsers:
+      type: object
+      required: [data, total, page, limit, total_pages]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+        total_pages:
+          type: integer
+    PaginatedAuditLogs:
+      type: object
+      required: [data, total, page, limit, total_pages]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuditLog'
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+        total_pages:
+          type: integer
