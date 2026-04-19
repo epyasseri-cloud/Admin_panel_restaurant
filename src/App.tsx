@@ -25,14 +25,25 @@ function DashboardPage() {
 }
 
 function AdminLayout({ onLogout }: { onLogout: () => void }) {
+  const user = useAuthStore((state) => state.user);
+
   return (
-    <div className="flex h-screen">
-      <Sidebar onLogout={onLogout} />
-      <main className="flex-1 overflow-auto">
-        <div className="p-6">
-          <Outlet />
+    <div className="flex flex-col h-screen overflow-hidden">
+      <header className="h-20 border-b border-border bg-card flex items-center justify-between px-8 shrink-0 header-premium">
+        <h1 className="logo-elite">Admin Restaurant</h1>
+        <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
+          Sesión: {user?.name}
         </div>
-      </main>
+      </header>
+
+      <div className="flex flex-1 overflow-hidden">
+        <Sidebar onLogout={onLogout} />
+        <main className="flex-1 overflow-auto bg-background/50">
+          <div className="p-8">
+            <Outlet />
+          </div>
+        </main>
+      </div>
       <TwoFactorModal />
     </div>
   );

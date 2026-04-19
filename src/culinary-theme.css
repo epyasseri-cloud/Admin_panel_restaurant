@@ -1,0 +1,246 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --background: 48 20% 97%;
+  --foreground: 222 47% 11%;
+  
+  --primary: 171 100% 13%;
+  --primary-foreground: 48 20% 97%;
+  
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 171 100% 13%;
+  
+  --muted: 210 40% 96%;
+  --muted-foreground: 215 16% 47%;
+  
+  --accent: 171 100% 13%;
+  --accent-foreground: 210 40% 98%;
+  
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  
+  --border: 214 32% 91%;
+  --input: 214 32% 91%;
+  --ring: 171 100% 13%;
+  
+  --radius: 0.6rem;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background-image: radial-gradient(rgba(0,0,0,0.08) 1px, transparent 1px);
+  background-size: 24px 24px;
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.01em;
+}
+
+h1, h2, h3, .font-serif, [class*="heading"] {
+  font-family: 'Playfair Display', serif !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.02em !important;
+  line-height: 1.2 !important;
+}
+
+h1 {
+  font-size: 1.5rem !important;
+  margin-bottom: 1.25rem !important;
+  color: #004236 !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+
+.header-premium {
+  background-color: #ffffff !important;
+  border-bottom: 1px solid #f0f0f0 !important;
+  box-shadow: 0 4px 20px rgba(0, 66, 54, 0.03) !important;
+  z-index: 100 !important;
+}
+
+.logo-elite {
+  font-size: 1.85rem !important;
+  font-style: italic !important;
+  color: #004236 !important;
+  letter-spacing: -0.02em !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: block !important;
+}
+
+aside h1, aside .text-xl {
+  font-size: 1.5rem !important;
+  color: #004236 !important;
+  letter-spacing: -0.01em !important;
+  margin-bottom: 0.25rem !important;
+}
+
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+}
+
+table th {
+  background-color: #f9fafb !important;
+  color: #6b7280 !important;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  padding: 1rem 1.25rem !important;
+  border-bottom: 2px solid #f3f4f6 !important;
+  text-align: left;
+}
+
+table td {
+  padding: 1.25rem !important;
+  border-bottom: 1px solid #f3f4f6 !important;
+  transition: background-color 0.2s ease;
+}
+
+table tr:hover td {
+  background-color: #fdfdfd !important;
+}
+
+aside, .sidebar-bg {
+  background-color: #f3f4f6 !important;
+  border-right: 1px solid #e5e7eb !important;
+  color: #111827 !important;
+}
+
+aside a, aside button {
+  color: #4b5563 !important;
+  padding: 0.75rem 1rem !important;
+  border-radius: 0.5rem !important;
+}
+
+aside a:hover, aside .active {
+  background-color: rgba(0, 66, 54, 0.1) !important;
+  color: #004236 !important;
+  font-weight: 600 !important;
+}
+
+img, .avatar {
+  max-width: 100%;
+  height: auto;
+}
+
+input, textarea, select {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 0.85rem !important;
+  background-color: transparent !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 0 !important;
+  padding: 0.75rem 1rem !important;
+  transition: all 0.2s ease;
+  width: 100%;
+  appearance: none;
+}
+
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23004236'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1rem;
+  padding-right: 2.5rem !important;
+}
+
+input:focus, select:focus {
+  outline: none !important;
+  border-color: #004236 !important;
+  box-shadow: 0 0 0 1px #004236 !important;
+}
+
+label {
+  display: block;
+  font-size: 0.65rem !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.1em !important;
+  margin-bottom: 0.5rem !important;
+  color: #6b7280 !important;
+}
+
+.card:first-of-type [class*="space-y-4"] {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
+  gap: 1.5rem !important;
+  background: white !important;
+  padding: 2rem !important;
+  border: 1px solid #eeeeee !important;
+  box-shadow: 0 10px 30px -15px rgba(0,0,0,0.05) !important;
+}
+
+button, .btn {
+  text-transform: uppercase;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.08em;
+  padding: 0.7rem 1.5rem !important;
+  border-radius: 0 !important;
+  transition: all 0.2s ease !important;
+}
+
+.btn-primary, button[type="submit"], .bg-primary {
+  background-color: #004236 !important;
+  color: white !important;
+  border: 1px solid #004236 !important;
+}
+
+.btn-primary:hover, button[type="submit"]:hover {
+  background-color: white !important;
+  color: #004236 !important;
+}
+
+blockquote, .quote-text {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 1.5rem;
+  line-height: 1.4;
+  color: #004236;
+  border-left: none !important;
+  padding: 3rem 0;
+  max-width: 600px;
+}
+
+.card {
+  border: none !important;
+  box-shadow: 0 10px 40px -15px rgba(0,0,0,0.05) !important;
+  background-color: white !important;
+}
+
+div[class*="DialogOverlay"],
+div[class*="backdrop"],
+[data-radix-portal] > div[style*="background-color"] {
+  background-color: transparent !important;
+  backdrop-filter: none !important;
+}
+
+div[role="dialog"] {
+  background-color: #ffffff !important;
+  border: 1px solid #004236 !important;
+  border-radius: 0 !important;
+  box-shadow: 0 30px 60px -12px rgba(0, 66, 54, 0.15), 0 18px 36px -18px rgba(0, 0, 0, 0.2) !important;
+  padding: 3rem !important;
+  max-width: 550px !important;
+}
+
+div[role="dialog"] [class*="DialogTitle"],
+div[role="dialog"] h2 {
+  font-family: 'Playfair Display', serif !important;
+  font-size: 2rem !important;
+  font-style: italic !important;
+  text-align: center !important;
+  color: #004236 !important;
+  margin-bottom: 2rem !important;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #fbfbf9;
+}
+::-webkit-scrollbar-thumb {
+  background: #004236;
+  border-radius: 10px;
+}

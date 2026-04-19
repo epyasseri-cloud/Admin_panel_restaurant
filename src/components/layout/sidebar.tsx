@@ -1,7 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { LogOut } from 'lucide-react';
 import { Button } from '@/components/ui';
-import { useAuthStore } from '@/store/auth.store';
 
 interface SidebarProps {
   onLogout: () => void;
@@ -9,7 +8,6 @@ interface SidebarProps {
 
 export function Sidebar({ onLogout }: SidebarProps) {
   const location = useLocation();
-  const user = useAuthStore((state) => state.user);
 
   const menuItems = [
     { label: 'Panel', href: '/dashboard' },
@@ -23,11 +21,7 @@ export function Sidebar({ onLogout }: SidebarProps) {
   const isActive = (href: string) => location.pathname === href;
 
   return (
-    <aside className="w-64 bg-card border-r border-border h-screen flex flex-col">
-      <div className="p-6 border-b border-border">
-        <h1 className="text-xl font-bold">Admin Restaurant</h1>
-        <p className="text-sm text-muted-foreground mt-1">{user?.name}</p>
-      </div>
+    <aside className="w-64 bg-card border-r border-border h-full flex flex-col pt-4">
 
       <nav className="flex-1 overflow-y-auto p-4 space-y-2">
         {menuItems.map((item) => (
