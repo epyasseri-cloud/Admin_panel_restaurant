@@ -72,6 +72,13 @@ export class ApiClient {
     return this.client.get<T>(url, { params });
   }
 
+  async getBlob(url: string, params?: QueryParams) {
+    return this.client.get<Blob>(url, {
+      params,
+      responseType: 'blob',
+    });
+  }
+
   async post<T>(url: string, data?: RequestData) {
     return this.client.post<T>(url, data);
   }

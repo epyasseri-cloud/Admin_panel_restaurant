@@ -17,7 +17,7 @@ export class ReportService {
   }
 
   async exportReportCSV(filter: ReportFilter) {
-    const response = await apiClient.get(
+    const response = await apiClient.getBlob(
       `${this.basePath}/export/csv`,
       {
         from_date: filter.from_date,
@@ -32,7 +32,7 @@ export class ReportService {
   }
 
   async exportReportPDF(filter: ReportFilter) {
-    const response = await apiClient.get(
+    const response = await apiClient.getBlob(
       `${this.basePath}/export/pdf`,
       {
         from_date: filter.from_date,

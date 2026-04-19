@@ -19,7 +19,7 @@ export class AuditLogService {
   }
 
   async exportAuditLogs(filter?: AuditLogFilter) {
-    const response = await apiClient.get(`${this.basePath}/export/csv`, filter);
+    const response = await apiClient.getBlob(`${this.basePath}/export/csv`, filter);
     return response.data as Blob;
   }
 }
