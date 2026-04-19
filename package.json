@@ -53,6 +53,7 @@
     "jsdom": "^29.0.2",
     "lucide-react": "^1.8.0",
     "postcss": "^8.5.10",
+    "supabase": "^2.92.1",
     "tailwind-merge": "^3.5.0",
     "tailwindcss": "^4.2.2",
     "typescript": "~6.0.2",
