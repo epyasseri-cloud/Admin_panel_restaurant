@@ -1,6 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { useState } from 'react';
-import { Menu } from 'lucide-react';
 import { ProtectedRoute } from '@/components/auth/protected-route';
 import { Sidebar } from '@/components/layout/sidebar';
 import { TwoFactorModal } from '@/components/auth/two-factor-modal';
@@ -12,7 +11,6 @@ import { ReportsPage } from '@/pages/reports.page';
 import { AuditLogsPage } from '@/pages/audit-logs.page';
 import { useAuthStore } from '@/store/auth.store';
 import { apiClient, authService } from '@/services';
-import { Button } from '@/components/ui';
 
 function DashboardPage() {
   const user = useAuthStore((state) => state.user);
