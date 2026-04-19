@@ -4,16 +4,16 @@
   --background: 48 20% 97%;
   --foreground: 222 47% 11%;
   
-  --primary: 171 100% 13%;
+  --primary: 144 46% 33%;
   --primary-foreground: 48 20% 97%;
   
   --secondary: 210 40% 96%;
-  --secondary-foreground: 171 100% 13%;
+  --secondary-foreground: 144 46% 33%;
   
   --muted: 210 40% 96%;
   --muted-foreground: 215 16% 47%;
   
-  --accent: 171 100% 13%;
+  --accent: 144 46% 33%;
   --accent-foreground: 210 40% 98%;
   
   --card: 0 0% 100%;
@@ -21,7 +21,7 @@
   
   --border: 214 32% 91%;
   --input: 214 32% 91%;
-  --ring: 171 100% 13%;
+  --ring: 144 46% 33%;
   
   --radius: 0.6rem;
 }
@@ -44,7 +44,7 @@ h1, h2, h3, .font-serif, [class*="heading"] {
 h1 {
   font-size: 1.5rem !important;
   margin-bottom: 1.25rem !important;
-  color: #004236 !important;
+  color: #2d7a4d !important;
   text-transform: none !important;
   letter-spacing: 0 !important;
 }
@@ -52,23 +52,37 @@ h1 {
 .header-premium {
   background-color: #ffffff !important;
   border-bottom: 1px solid #f0f0f0 !important;
-  box-shadow: 0 4px 20px rgba(0, 66, 54, 0.03) !important;
+  box-shadow: 0 4px 20px rgba(45, 122, 77, 0.05) !important;
   z-index: 100 !important;
 }
 
 .logo-elite {
-  font-size: 1.85rem !important;
+  font-size: 1.6rem !important;
   font-style: italic !important;
-  color: #004236 !important;
+  font-weight: 800 !important;
+  color: #166534 !important; /* Deep Forest Green */
   letter-spacing: -0.02em !important;
   margin: 0 !important;
   padding: 0 !important;
   display: block !important;
+  transition: all 0.3s ease;
+}
+
+.logo-elite-mini {
+  font-size: 1.2rem !important;
+  width: 40px !important;
+  height: 40px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: #2d7a4d !important;
+  color: white !important;
+  border-radius: 50% !important;
 }
 
 aside h1, aside .text-xl {
   font-size: 1.5rem !important;
-  color: #004236 !important;
+  color: #2d7a4d !important;
   letter-spacing: -0.01em !important;
   margin-bottom: 0.25rem !important;
 }
@@ -101,22 +115,72 @@ table tr:hover td {
   background-color: #fdfdfd !important;
 }
 
-aside, .sidebar-bg {
-  background-color: #f3f4f6 !important;
-  border-right: 1px solid #e5e7eb !important;
-  color: #111827 !important;
+.sidebar-premium {
+  background: #2d7a4d !important; /* Login's Corporate Forest Green */
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.1) !important;
+  z-index: 40;
+  border-right: 1px solid rgba(0, 0, 0, 0.05) !important;
 }
 
-aside a, aside button {
-  color: #4b5563 !important;
-  padding: 0.75rem 1rem !important;
-  border-radius: 0.5rem !important;
+.sidebar-premium .text-muted-foreground {
+  color: rgba(255, 255, 255, 0.7) !important;
 }
 
-aside a:hover, aside .active {
-  background-color: rgba(0, 66, 54, 0.1) !important;
+.sidebar-premium .text-foreground {
+  color: #ffffff !important;
+}
+
+.sidebar-premium .bg-card {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.menu-item-active {
+  color: #ffffff !important;
+  position: relative;
+}
+
+.sidebar-premium a:hover:not(.menu-item-active) {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  color: #ffffff !important;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.logo-elite {
+  font-size: 1.6rem !important;
+  font-style: italic !important;
+  font-weight: 800 !important;
   color: #004236 !important;
-  font-weight: 600 !important;
+  letter-spacing: -0.03em !important;
+  transition: all 0.3s ease;
+}
+
+.logo-elite:hover {
+  transform: skewX(-5deg);
+}
+
+.header-premium {
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border-bottom: 1px solid rgba(0, 66, 54, 0.08) !important;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03) !important;
 }
 
 img, .avatar {
@@ -146,8 +210,8 @@ select {
 
 input:focus, select:focus {
   outline: none !important;
-  border-color: #004236 !important;
-  box-shadow: 0 0 0 1px #004236 !important;
+  border-color: #2d7a4d !important;
+  box-shadow: 0 0 0 1px #2d7a4d !important;
 }
 
 label {
@@ -181,14 +245,14 @@ button, .btn {
 }
 
 .btn-primary, button[type="submit"], .bg-primary {
-  background-color: #004236 !important;
+  background-color: #2d7a4d !important;
   color: white !important;
-  border: 1px solid #004236 !important;
+  border: 1px solid #2d7a4d !important;
 }
 
 .btn-primary:hover, button[type="submit"]:hover {
   background-color: white !important;
-  color: #004236 !important;
+  color: #2d7a4d !important;
 }
 
 blockquote, .quote-text {
@@ -196,7 +260,7 @@ blockquote, .quote-text {
   font-style: italic;
   font-size: 1.5rem;
   line-height: 1.4;
-  color: #004236;
+  color: #2d7a4d;
   border-left: none !important;
   padding: 3rem 0;
   max-width: 600px;
@@ -217,9 +281,9 @@ div[class*="backdrop"],
 
 div[role="dialog"] {
   background-color: #ffffff !important;
-  border: 1px solid #004236 !important;
+  border: 1px solid #2d7a4d !important;
   border-radius: 0 !important;
-  box-shadow: 0 30px 60px -12px rgba(0, 66, 54, 0.15), 0 18px 36px -18px rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 30px 60px -12px rgba(45, 122, 77, 0.15), 0 18px 36px -18px rgba(0, 0, 0, 0.2) !important;
   padding: 3rem !important;
   max-width: 550px !important;
 }
@@ -241,6 +305,164 @@ div[role="dialog"] h2 {
   background: #fbfbf9;
 }
 ::-webkit-scrollbar-thumb {
-  background: #004236;
-  border-radius: 10px;
+  background: #d1d5db;
+  border-radius: 3px;
+}
+
+/* Geometric Login Styles */
+.geo-login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f2f5;
+  padding: 1.5rem;
+}
+
+.geo-login-card {
+  background: white;
+  width: 100%;
+  max-width: 380px;
+  border-radius: 20px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: visible; /* To allow avatar to stick out */
+  display: flex;
+  flex-direction: column;
+}
+
+.geo-corners {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  border-radius: 20px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.geo-avatar-container {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 80px;
+  background-color: #333;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  border: 4px solid white;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.geo-login-content {
+  padding: 3rem 2rem 2.5rem;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+}
+
+.geo-login-title {
+  color: #2d7a4d !important;
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 800 !important;
+  font-size: 1.5rem !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 2rem !important;
+  text-align: center;
+}
+
+.geo-field-label {
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  color: #444 !important;
+  margin-bottom: 6px !important;
+  text-transform: none !important;
+}
+
+.geo-input-group {
+  display: flex;
+  height: 48px;
+  margin-bottom: 1.5rem;
+  width: 100%;
+}
+
+.geo-icon-prefix {
+  width: 48px;
+  height: 48px;
+  background-color: #2d7a4d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  border-radius: 12px 0 0 12px;
+  flex-shrink: 0;
+}
+
+.geo-input-field {
+  flex: 1;
+  background-color: #e5e7eb !important;
+  border: none !important;
+  border-radius: 0 12px 12px 0 !important;
+  padding: 0 1rem !important;
+  font-size: 0.9rem !important;
+  color: #333 !important;
+  height: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.geo-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0.5rem 0 2rem;
+  font-size: 0.75rem;
+  color: #666;
+}
+
+.geo-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.geo-button {
+  background-color: #2d7a4d !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 12px !important;
+  height: 50px !important;
+  font-weight: 700 !important;
+  font-size: 0.9rem !important;
+  text-transform: uppercase;
+  width: 100% !important;
+  cursor: pointer;
+  transition: background-color 0.2s ease !important;
+  box-shadow: 0 4px 10px rgba(45, 122, 77, 0.2) !important;
+}
+
+.geo-button:hover {
+  background-color: #24633e !important;
+}
+
+.geo-button:disabled {
+  background-color: #a7c9b5 !important;
+  cursor: not-allowed;
+}
+
+.geo-footer-link {
+  color: #2d7a4d;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.geo-footer-link:hover {
+  text-decoration: underline;
 }

@@ -1,4 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { useState } from 'react';
+import { Menu } from 'lucide-react';
 import { ProtectedRoute } from '@/components/auth/protected-route';
 import { Sidebar } from '@/components/layout/sidebar';
 import { TwoFactorModal } from '@/components/auth/two-factor-modal';
@@ -10,6 +12,7 @@ import { ReportsPage } from '@/pages/reports.page';
 import { AuditLogsPage } from '@/pages/audit-logs.page';
 import { useAuthStore } from '@/store/auth.store';
 import { apiClient, authService } from '@/services';
+import { Button } from '@/components/ui';
 
 function DashboardPage() {
   const user = useAuthStore((state) => state.user);
@@ -26,20 +29,30 @@ function DashboardPage() {
 
 function AdminLayout({ onLogout }: { onLogout: () => void }) {
   const user = useAuthStore((state) => state.user);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
 
   return (
     <div className="flex flex-col h-screen overflow-hidden">
-      <header className="h-20 border-b border-border bg-card flex items-center justify-between px-8 shrink-0 header-premium">
-        <h1 className="logo-elite">Admin Restaurant</h1>
+      <header className="h-[70px] border-b border-border bg-card flex items-center justify-between px-8 shrink-0 header-premium relative z-50">
+        <div className="flex items-center gap-6">
+          <h1 className="logo-elite !mb-0">Admin Restaurant</h1>
+        </div>
         <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-          Sesión: {user?.name}
+          Administrador: {user?.name}
         </div>
       </header>
 
       <div className="flex flex-1 overflow-hidden">
-        <Sidebar onLogout={onLogout} />
-        <main className="flex-1 overflow-auto bg-background/50">
-          <div className="p-8">
+        <div 
+          onMouseEnter={() => setIsSidebarCollapsed(false)}
+          onMouseLeave={() => setIsSidebarCollapsed(true)}
+          className="w-[80px] h-full z-40 relative shrink-0"
+        >
+          <Sidebar onLogout={onLogout} isCollapsed={isSidebarCollapsed} />
+        </div>
+
+        <main className="flex-1 overflow-auto bg-background/50 flex justify-center">
+          <div className="max-w-[1200px] w-full p-8 md:p-12 lg:p-16">
             <Outlet />
           </div>
         </main>
