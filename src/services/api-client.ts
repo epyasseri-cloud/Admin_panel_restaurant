@@ -6,9 +6,27 @@ type QueryParams = object;
 type RequestData = unknown;
 type FormFieldValue = string | number | boolean | Blob | File | null | undefined;
 
+interface RefreshTokenResponse {
+  success: boolean;
+  data?: {
+    token?: {
+      access_token: string;
+      refresh_token?: string;
+      expires_in: number;
+      token_type: string;
+    };
+  };
+}
+
+interface RetriableRequestConfig extends InternalAxiosRequestConfig {
+  _retry?: boolean;
+}
+
 export class ApiClient {
   private client: AxiosInstance;
   private tokenKey = 'auth_token';
+  private refreshTokenKey = 'refresh_token';
+  private refreshPromise: Promise<string | null> | null = null;
 
   constructor() {
     this.client = axios.create({
@@ -40,23 +58,52 @@ export class ApiClient {
 
     this.client.interceptors.response.use(
       (response) => response,
-      (error: AxiosError) => {
-        if (error.response?.status === 401) {
+      async (error: AxiosError) => {
+        const originalRequest = error.config as RetriableRequestConfig | undefined;
+        const status = error.response?.status;
+        const requestUrl = originalRequest?.url ?? '';
+
+        const canAttemptRefresh =
+          status === 401 &&
+          !!originalRequest &&
+          !originalRequest._retry &&
+          !requestUrl.includes('/auth-refresh') &&
+          !requestUrl.includes('/auth-login');
+
+        if (canAttemptRefresh && originalRequest) {
+          originalRequest._retry = true;
+          const nextAccessToken = await this.refreshAccessToken();
+
+          if (nextAccessToken) {
+            originalRequest.headers.Authorization = `Bearer ${nextAccessToken}`;
+            return this.client(originalRequest);
+          }
+        }
+
+        if (status === 401) {
           this.clearToken();
           window.location.href = '/login';
         }
+
         return Promise.reject(error);
       }
     );
   }
 
-  setToken(token: string, userId: string) {
+  setToken(token: string, userId: string, refreshToken?: string) {
     localStorage.setItem(this.tokenKey, token);
     localStorage.setItem('user_id', userId);
+    if (refreshToken) {
+      localStorage.setItem(this.refreshTokenKey, refreshToken);
+    }
   }
 
   getToken(): string | null {
     return localStorage.getItem(this.tokenKey);
+  }
+
+  getRefreshToken(): string | null {
+    return localStorage.getItem(this.refreshTokenKey);
   }
 
   getUserId(): string | null {
@@ -65,7 +112,52 @@ export class ApiClient {
 
   clearToken() {
     localStorage.removeItem(this.tokenKey);
+    localStorage.removeItem(this.refreshTokenKey);
     localStorage.removeItem('user_id');
+  }
+
+  private async refreshAccessToken(): Promise<string | null> {
+    const refreshToken = this.getRefreshToken();
+    if (!refreshToken) {
+      return null;
+    }
+
+    if (!this.refreshPromise) {
+      this.refreshPromise = (async () => {
+        try {
+          const response = await axios.post<RefreshTokenResponse>(
+            `${API_BASE_URL}/auth-refresh`,
+            {
+              refresh_token: refreshToken,
+            },
+            {
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              timeout: 30000,
+            }
+          );
+
+          const nextToken = response.data.data?.token;
+          if (!response.data.success || !nextToken?.access_token) {
+            return null;
+          }
+
+          localStorage.setItem(this.tokenKey, nextToken.access_token);
+          if (nextToken.refresh_token) {
+            localStorage.setItem(this.refreshTokenKey, nextToken.refresh_token);
+          }
+
+          return nextToken.access_token;
+        } catch {
+          return null;
+        } finally {
+          this.refreshPromise = null;
+        }
+      })();
+    }
+
+    return this.refreshPromise;
   }
 
   async get<T>(url: string, params?: QueryParams) {

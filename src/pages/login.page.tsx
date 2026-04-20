@@ -75,7 +75,7 @@ export function LoginPage() {
         throw new Error('Solo usuarios admin pueden acceder a este panel');
       }
 
-      apiClient.setToken(response.token.access_token, response.user.id);
+      apiClient.setToken(response.token.access_token, response.user.id, response.token.refresh_token);
       setUser(response.user);
       navigate(redirectTo, { replace: true });
     } catch (submitError) {

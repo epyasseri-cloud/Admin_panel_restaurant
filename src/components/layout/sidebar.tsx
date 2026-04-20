@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -22,7 +21,6 @@ interface SidebarProps {
 export function Sidebar({ onLogout, isCollapsed = false }: SidebarProps) {
   const location = useLocation();
   const user = useAuthStore((state) => state.user);
-  const [hoveredPath, setHoveredPath] = useState<string | null>(null);
 
   const menuGroups = [
     {
@@ -81,7 +79,7 @@ export function Sidebar({ onLogout, isCollapsed = false }: SidebarProps) {
               )}
             </AnimatePresence>
             
-            <nav className="space-y-4" onMouseLeave={() => setHoveredPath(null)}>
+            <nav className="space-y-4">
               {group.items.map((item) => {
                 const Icon = item.icon;
                 const active = isActive(item.href);
@@ -89,7 +87,6 @@ export function Sidebar({ onLogout, isCollapsed = false }: SidebarProps) {
                   <Link
                     key={item.href}
                     to={item.href}
-                    onMouseEnter={() => setHoveredPath(item.href)}
                     className={`relative flex items-center transition-all duration-300 group rounded-lg ${
                       isCollapsed ? 'justify-center p-3' : 'px-4 py-5'
                     }`}
